@@ -162,7 +162,6 @@
             </div>
 
             <div class="chat-messages" id="chatMessages">
-                <!-- Messages will be loaded here -->
             </div>
 
             <div class="chat-input-area">
@@ -216,7 +215,6 @@
         const loadMessages = () => {
             let chats = JSON.parse(localStorage.getItem('chats')) || [];
             
-            // Sort by timestamp
             chats.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
             
             const messagesContainer = document.getElementById('chatMessages');
@@ -242,11 +240,9 @@
                 `;
             }).join('');
 
-            // Scroll to bottom
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         };
 
-        // Handle send message
         document.getElementById('chatForm').addEventListener('submit', (e) => {
             e.preventDefault();
 
@@ -254,11 +250,9 @@
             const messageError = document.getElementById('messageError');
             const message = messageInput.value.trim();
 
-            // Reset validation
             messageInput.classList.remove('is-invalid');
             messageError.textContent = '';
 
-            // Validate message
             if (!message) {
                 messageInput.classList.add('is-invalid');
                 messageError.textContent = 'Message is required';
@@ -266,7 +260,6 @@
                 return;
             }
 
-            // Add message to chats
             const chats = JSON.parse(localStorage.getItem('chats')) || [];
             const newChat = {
                 id: chats.length > 0 ? Math.max(...chats.map(c => c.id)) + 1 : 1,
@@ -279,17 +272,14 @@
             chats.push(newChat);
             localStorage.setItem('chats', JSON.stringify(chats));
 
-            // Clear input and reload messages
             messageInput.value = '';
             loadMessages();
         });
 
-        // Refresh chat
         window.refreshChat = () => {
             loadMessages();
         };
 
-        // Load messages on page load
         loadMessages();
     </script>
 </body>
