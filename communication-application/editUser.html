@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User - Communication App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .content-container {
+            padding: 40px 0;
+        }
+        .edit-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="LoginSuccess.html">
+                <i class="bi bi-chat-dots-fill me-2"></i>Communication App
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="Userlist.html">
+                            <i class="bi bi-people me-1"></i>Manage Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Chatlist.html">
+                            <i class="bi bi-chat-square-text me-1"></i>Group Chat
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Documentlist.html">
+                            <i class="bi bi-file-earmark-text me-1"></i>Documents
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Logout.html">
+                            <i class="bi bi-box-arrow-right me-1"></i>Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container content-container">
+        <div class="edit-card">
+            <div class="d-flex align-items-center mb-4">
+                <a href="Userlist.html" class="btn btn-outline-secondary me-3">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <div>
+                    <h2 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit User</h2>
+                    <p class="text-muted mb-0">Update user information</p>
+                </div>
+            </div>
+
+            <form id="editUserForm">
+                <div class="mb-3">
+                    <label for="fullname" class="form-label">Full Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control" id="fullname" placeholder="Enter full name">
+                    </div>
+                    <div class="invalid-feedback" id="fullnameError"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                        <input type="email" class="form-control" id="email" placeholder="Enter email">
+                    </div>
+                    <div class="invalid-feedback" id="emailError"></div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-save me-2"></i>Save Changes
+                    </button>
+                    <a href="Userlist.html" class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+        if (!loggedInUser) {
+            alert('Please login to access this page');
+            window.location.href = 'Login.html';
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = parseInt(urlParams.get('id'));
+
+        if (!userId) {
+            alert('Invalid user ID');
+            window.location.href = 'Userlist.html';
+        }
+
+        const loadUserData = () => {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.id === userId);
+
+            if (!user) {
+                alert('User not found');
+                window.location.href = 'Userlist.html';
+                return;
+            }
+
+            document.getElementById('fullname').value = user.name;
+            document.getElementById('email').value = user.email;
+        };
+
+        const validateEmail = (email) => {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        };
+
+        document.getElementById('editUserForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const fullname = document.getElementById('fullname').value.trim();
+            const email = document.getElementById('email').value.trim();
+            
+            const fullnameInput = document.getElementById('fullname');
+            const emailInput = document.getElementById('email');
+            const fullnameError = document.getElementById('fullnameError');
+            const emailError = document.getElementById('emailError');
+
+            let isValid = true;
+
+            fullnameInput.classList.remove('is-invalid');
+            emailInput.classList.remove('is-invalid');
+            fullnameError.textContent = '';
+            emailError.textContent = '';
+
+            if (!fullname) {
+                fullnameInput.classList.add('is-invalid');
+                fullnameError.textContent = 'Full name is required';
+                fullnameError.style.display = 'block';
+                isValid = false;
+            }
+
+            if (!email) {
+                emailInput.classList.add('is-invalid');
+                emailError.textContent = 'Email is required';
+                emailError.style.display = 'block';
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                emailInput.classList.add('is-invalid');
+                emailError.textContent = 'Invalid email format';
+                emailError.style.display = 'block';
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const userIndex = users.findIndex(u => u.id === userId);
+
+            if (userIndex === -1) {
+                alert('User not found');
+                return;
+            }
+
+            users[userIndex].name = fullname;
+            users[userIndex].email = email;
+            localStorage.setItem('users', JSON.stringify(users));
+
+            if (loggedInUser.id === userId) {
+                loggedInUser.name = fullname;
+                loggedInUser.email = email;
+                localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+            }
+
+            alert('User updated successfully');
+            window.location.href = 'Userlist.html';
+        });
+
+        loadUserData();
+    </script>
+</body>
+</html>
